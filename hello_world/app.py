@@ -42,7 +42,7 @@ def lambda_handler(event, context):
     #     print(e)
 
     #     raise e
-    print(str(ksuid()))
+    print("ksuid ",str(ksuid()))
     return {
         "statusCode": 200,
         "body": json.dumps({
