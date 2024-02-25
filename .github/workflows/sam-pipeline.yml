@@ -1,0 +1,29 @@
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+#    defaults:
+#      run:
+#        working-directory: ./working-directory
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: aws-actions/setup-sam@v1
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+#      - run: cd lambda_layers/global_utils/python && pip install -r requirements.txt -t .
+#      - name: Install layers packages
+#        working-directory: ./lambda_layers/global_utils/python
+#        run: |
+#          pip uninstall -r requirements.txt
+#          pip install -r requirements.txt -t .
+      - run: sam build --use-container
+      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name github-actions-aws-cicd --s3-bucket cicd-github-ac --capabilities CAPABILITY_IAM --region us-west-2
